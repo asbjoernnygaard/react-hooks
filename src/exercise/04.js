@@ -4,13 +4,14 @@
 import * as React from 'react'
 import {useLocalStorageState} from "../utils";
 
+const initialSquares = Array(9).fill(null)
 function Board() {
-  const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null))
-  const [nextVal, setNextVal] = React.useState(calculateNextValue(squares)); // - nextValue ('X' or 'O')
-  const [winner, setWinner] = React.useState(calculateWinner(squares));   // - winner ('X', 'O', or null)
-  const [status, setStatus] = React.useState(calculateStatus(winner, squares, nextVal));   // - status (`Winner: ${winner}`, `Scratch: Cat's game`, or `Next player: ${nextValue}`)
+  const [squares, setSquares] = useLocalStorageState('squares', initialSquares)
+  const nextVal = calculateNextValue(squares)
+  const winner = calculateWinner(squares)
+  const status = calculateStatus(winner, squares, nextVal)
 
-  const [history, setHistory] = useLocalStorageState('squareHistory', [Array(9).fill(null)])
+  const [history, setHistory] = useLocalStorageState('squareHistory', [initialSquares])
   const [currentStep, setCurrentStep] = React.useState(0);
 
   function selectSquare(square) {
@@ -20,9 +21,6 @@ function Board() {
     const newSquares = [...squares]
     newSquares[square] = nextVal
 
-    setNextVal(calculateNextValue(newSquares))
-    setWinner(calculateWinner(newSquares))
-    setStatus(calculateStatus(winner, newSquares, nextVal))
     setHistory([...history.slice(0, currentStep + 1), newSquares])
     setCurrentStep((prev)=>prev+1)
 
@@ -30,8 +28,8 @@ function Board() {
   }
 
   function restart() {
-    setSquares(Array(9).fill(null))
-    setHistory([Array(9).fill(null)])
+    setSquares(initialSquares)
+    setHistory([initialSquares])
   }
 
   function renderSquare(i) {
